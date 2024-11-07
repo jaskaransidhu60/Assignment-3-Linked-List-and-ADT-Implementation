@@ -3,18 +3,34 @@
 # Course: CS261 - Data Structures
 # Assignment: 3
 # Due Date: 4 November
-# Description: Implements a Stack ADT using a Singly Linked List.
-# Utilizes a linked-node structure with constant time complexity for push, pop, and top operations, adhering to stack principles.
+# Description: Implements a stack using a singly linked list, supporting push, pop, and top operations.
+
+class StackException(Exception):
+    """Custom exception for Stack operations."""
+    pass
+
+class StackNode:
+    def __init__(self, value):
+        self.value = value
+        self.next = None
 
 class Stack:
     def __init__(self):
-        pass  # Linked List based stack initialization
+        self.top_node = None
 
-    def push(self, value: object) -> None:
-        pass  # implement push
-    
-    def pop(self) -> object:
-        pass  # implement pop
-    
-    def top(self) -> object:
-        pass  # implement top peek
+    def push(self, value):
+        new_node = StackNode(value)
+        new_node.next = self.top_node
+        self.top_node = new_node
+
+    def pop(self):
+        if not self.top_node:
+            raise StackException("Pop from empty stack")
+        value = self.top_node.value
+        self.top_node = self.top_node.next
+        return value
+
+    def top(self):
+        if not self.top_node:
+            raise StackException("Top of empty stack")
+        return self.top_node.value
