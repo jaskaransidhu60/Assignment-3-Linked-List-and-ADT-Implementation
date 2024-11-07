@@ -22,7 +22,7 @@ class Queue:
 
     def __str__(self) -> str:
         """Override string method to provide more readable output."""
-        size = self._current_size
+        size = self.size()
         out = "QUEUE: " + str(size) + " element(s). ["
         front_index = self._front
         for _ in range(size - 1):
@@ -46,7 +46,7 @@ class Queue:
 
     def enqueue(self, value: object) -> None:
         """Add a new value to the end of the queue, resizing if needed."""
-        if self._current_size == self._sa.length():
+        if self.size() == self._sa.length():
             self._double_queue()
 
         self._back = self._increment(self._back)
