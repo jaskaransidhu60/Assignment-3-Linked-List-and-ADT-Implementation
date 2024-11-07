@@ -16,27 +16,56 @@ class QueueNode:
 
 class Queue:
     def __init__(self):
-        self.front_node = None
+        self.front_node = None  # renamed to avoid conflict with 'front' method
         self.rear_node = None
+        self._size = 0  # renamed to '_size' to ensure no method conflicts
 
     def enqueue(self, value):
+        """Adds a new value to the end of the queue."""
         new_node = QueueNode(value)
-        if not self.rear_node:
-            self.front_node = self.rear_node = new_node
+        if self.rear_node is None:
+            # If the queue is empty, the new node is both the front and rear
+            self.front_node = new_node
         else:
+            # Link the current rear to the new node
             self.rear_node.next = new_node
-            self.rear_node = new_node
+        self.rear_node = new_node
+        self._size += 1
 
     def dequeue(self):
-        if not self.front_node:
+        """Removes and returns the value from the front of the queue."""
+        if self.is_empty():
             raise QueueException("Dequeue from empty queue")
         value = self.front_node.value
         self.front_node = self.front_node.next
-        if not self.front_node:
+        if self.front_node is None:
+            # Queue is empty after removal
             self.rear_node = None
+        self._size -= 1
         return value
 
     def front(self):
-        if not self.front_node:
+        """Returns the value at the front without removing it."""
+        if self.is_empty():
             raise QueueException("Front of empty queue")
         return self.front_node.value
+
+    def is_empty(self):
+        """Returns True if the queue is empty, False otherwise."""
+        return self._size == 0
+
+    def size(self):
+        """Returns the current size of the queue."""
+        return self._size
+
+    def __str__(self):
+        """String representation for debugging."""
+        result = "QUEUE ["
+        current = self.front_node
+        while current is not None:
+            result += str(current.value)
+            if current.next is not None:
+                result += " -> "
+            current = current.next
+        result += "]"
+        return result
