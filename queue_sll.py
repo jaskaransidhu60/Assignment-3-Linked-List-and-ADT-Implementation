@@ -3,69 +3,85 @@
 # Course: CS261 - Data Structures
 # Assignment: 3
 # Due Date: 4 November
-# Description: Implements a queue using a singly linked list, supporting enqueue, dequeue, and front operations.
+# Description: Implements a queue using a static array with circular buffer logic,
+# supporting enqueue, dequeue, and front operations with proper resizing.
+
+from static_array import StaticArray
 
 class QueueException(Exception):
-    """Custom exception for Queue operations."""
+    """Custom exception to be used by Queue class."""
     pass
 
-class QueueNode:
-    def __init__(self, value):
-        self.value = value
-        self.next = None
-
 class Queue:
-    def __init__(self):
-        self.front_node = None  # renamed to avoid conflict with 'front' method
-        self.rear_node = None
-        self._size = 0  # renamed to '_size' to ensure no method conflicts
+    def __init__(self) -> None:
+        """Initialize a new queue based on Static Array with a default capacity of 4."""
+        self._sa = StaticArray(4)
+        self._front = 0
+        self._back = -1
+        self._current_size = 0
 
-    def enqueue(self, value):
-        """Adds a new value to the end of the queue."""
-        new_node = QueueNode(value)
-        if self.rear_node is None:
-            # If the queue is empty, the new node is both the front and rear
-            self.front_node = new_node
-        else:
-            # Link the current rear to the new node
-            self.rear_node.next = new_node
-        self.rear_node = new_node
-        self._size += 1
+    def __str__(self) -> str:
+        """Override string method to provide more readable output."""
+        size = self._current_size
+        out = "QUEUE: " + str(size) + " element(s). ["
+        front_index = self._front
+        for _ in range(size - 1):
+            out += str(self._sa[front_index]) + ', '
+            front_index = self._increment(front_index)
+        if size > 0:
+            out += str(self._sa[front_index])
+        return out + ']'
 
-    def dequeue(self):
-        """Removes and returns the value from the front of the queue."""
+    def is_empty(self) -> bool:
+        """Return True if the queue is empty, False otherwise."""
+        return self._current_size == 0
+
+    def size(self) -> int:
+        """Return the number of elements currently in the queue."""
+        return self._current_size
+
+    def _increment(self, index: int) -> int:
+        """Move index to next position, wrapping around if needed."""
+        return (index + 1) % self._sa.length()
+
+    def enqueue(self, value: object) -> None:
+        """Add a new value to the end of the queue, resizing if needed."""
+        if self._current_size == self._sa.length():
+            self._double_queue()
+
+        self._back = self._increment(self._back)
+        self._sa[self._back] = value
+        self._current_size += 1
+
+    def dequeue(self) -> object:
+        """Remove and return the value from the front of the queue."""
         if self.is_empty():
-            raise QueueException("Dequeue from empty queue")
-        value = self.front_node.value
-        self.front_node = self.front_node.next
-        if self.front_node is None:
-            # Queue is empty after removal
-            self.rear_node = None
-        self._size -= 1
+            raise QueueException("Cannot dequeue from an empty queue")
+
+        value = self._sa[self._front]
+        self._sa[self._front] = None  # Clear out the value for better debugging
+        self._front = self._increment(self._front)
+        self._current_size -= 1
         return value
 
-    def front(self):
-        """Returns the value at the front without removing it."""
+    def front(self) -> object:
+        """Return the value at the front of the queue without removing it."""
         if self.is_empty():
-            raise QueueException("Front of empty queue")
-        return self.front_node.value
+            raise QueueException("Cannot access front of an empty queue")
+        return self._sa[self._front]
 
-    def is_empty(self):
-        """Returns True if the queue is empty, False otherwise."""
-        return self._size == 0
+    def _double_queue(self) -> None:
+        """Double the capacity of the queue when it is full."""
+        new_capacity = self._sa.length() * 2
+        new_sa = StaticArray(new_capacity)
 
-    def size(self):
-        """Returns the current size of the queue."""
-        return self._size
+        # Copy elements in order starting from _front
+        index = self._front
+        for i in range(self._current_size):
+            new_sa[i] = self._sa[index]
+            index = self._increment(index)
 
-    def __str__(self):
-        """String representation for debugging."""
-        result = "QUEUE ["
-        current = self.front_node
-        while current is not None:
-            result += str(current.value)
-            if current.next is not None:
-                result += " -> "
-            current = current.next
-        result += "]"
-        return result
+        # Update to the new array and reset front and back positions
+        self._sa = new_sa
+        self._front = 0
+        self._back = self._current_size - 1
