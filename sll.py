@@ -6,6 +6,10 @@
 # Description: Implements a Singly Linked List with methods to insert, remove, count, find, and slice elements.
 # This structure uses a front sentinel node for easier head management and supports a range of list operations with O(N) efficiency where necessary.
 
+class SLLException(Exception):
+    """Custom exception for Singly Linked List errors"""
+    pass
+
 class SLNode:
     def __init__(self, value: object):
         self.value = value
@@ -17,9 +21,11 @@ class LinkedList:
         self._size = 0
     
     def insert_front(self, value: object) -> None:
-        pass  # implement
+        # Implementation of insert_front
+        pass
     
     def insert_back(self, value: object) -> None:
-        pass  # implement
-    
-    # Include additional LinkedList methods based on description
+        # Implementation of insert_back
+        pass
+
+    # Implement additional LinkedList methods based on requirements
