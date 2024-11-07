@@ -6,7 +6,6 @@
 # Description: Implements a Stack using a DynamicArray as the underlying structure,
 # providing push, pop, and top operations.
 
-from dynamic_array import DynamicArray
 
 class StackException(Exception):
     """Custom exception to be used by Stack class."""
