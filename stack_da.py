@@ -3,49 +3,49 @@
 # Course: CS261 - Data Structures
 # Assignment: 3
 # Due Date: 4 November
-# Description: Implements a stack using a dynamic array, supporting push, pop, and top operations.
+# Description: Implements a Stack using a DynamicArray as the underlying structure,
+# providing push, pop, and top operations.
 
-class DynamicArray:
-    def __init__(self):
-        self.array = [None] * 4
-        self.size = 0
-        self.capacity = 4
-
-    def append(self, value):
-        if self.size == self.capacity:
-            self._resize(2 * self.capacity)
-        self.array[self.size] = value
-        self.size += 1
-
-    def _resize(self, new_capacity):
-        new_array = [None] * new_capacity
-        for i in range(self.size):
-            new_array[i] = self.array[i]
-        self.array = new_array
-        self.capacity = new_capacity
+from dynamic_array import DynamicArray
 
 class StackException(Exception):
-    """Custom exception for Stack operations."""
+    """Custom exception to be used by Stack class."""
     pass
 
 class Stack:
     def __init__(self):
+        """Initialize new stack based on Dynamic Array."""
         self._da = DynamicArray()
 
-    def push(self, value):
+    def __str__(self) -> str:
+        """Return content of stack in human-readable form."""
+        out = "STACK: " + str(self.size()) + " elements. ["
+        out += ', '.join([str(self._da[i]) for i in range(self._da.length())])
+        return out + ']'
+
+    def is_empty(self) -> bool:
+        """Return True if the stack is empty, False otherwise."""
+        return self._da.is_empty()
+
+    def size(self) -> int:
+        """Return the number of elements currently in the stack."""
+        return self._da.length()
+
+    # -----------------------------------------------------------------------
+    def push(self, value: object) -> None:
+        """Add a new element to the top of the stack."""
         self._da.append(value)
 
-    def pop(self):
+    def pop(self) -> object:
+        """Remove and return the top element of the stack. Raise exception if empty."""
         if self.is_empty():
-            raise StackException("Pop from empty stack")
-        value = self._da.array[self._da.size - 1]
-        self._da.size -= 1
-        return value
+            raise StackException("Cannot pop from an empty stack")
+        top_value = self._da[self.size() - 1]
+        self._da.remove_at_index(self.size() - 1)
+        return top_value
 
-    def top(self):
+    def top(self) -> object:
+        """Return the top element of the stack without removing it. Raise exception if empty."""
         if self.is_empty():
-            raise StackException("Top of empty stack")
-        return self._da.array[self._da.size - 1]
-
-    def is_empty(self):
-        return self._da.size == 0
+            raise StackException("Cannot access top of an empty stack")
+        return self._da[self.size() - 1]
