@@ -16,27 +16,35 @@ class StackNode:
 
 class Stack:
     def __init__(self):
-        self.top_node = None
-        self.size = 0  # Added size attribute to track stack size
+        self.top_node = None  # renamed to avoid conflict with method 'top'
+        self._size = 0        # renamed to '_size' to avoid conflict with size attribute
 
     def push(self, value):
+        """Adds a new value to the top of the stack."""
         new_node = StackNode(value)
         new_node.next = self.top_node
         self.top_node = new_node
-        self.size += 1
+        self._size += 1
 
     def pop(self):
+        """Removes and returns the value from the top of the stack."""
         if self.is_empty():
             raise StackException("Pop from empty stack")
         value = self.top_node.value
         self.top_node = self.top_node.next
-        self.size -= 1
+        self._size -= 1
         return value
 
     def top(self):
+        """Returns the top value without removing it from the stack."""
         if self.is_empty():
             raise StackException("Top of empty stack")
         return self.top_node.value
 
     def is_empty(self):
-        return self.size == 0
+        """Returns True if the stack is empty, False otherwise."""
+        return self._size == 0
+
+    def size(self):
+        """Returns the current size of the stack."""
+        return self._size
